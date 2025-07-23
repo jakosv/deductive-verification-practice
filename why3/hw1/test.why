@@ -1,0 +1,3 @@
+theory test
+  Goal G1: false -> true
+end

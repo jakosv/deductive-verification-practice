@@ -1,0 +1,53 @@
+theory Homework3
+  use int.Int
+  use int.Power
+
+  predicate phi (x: int) =
+    x > 1
+
+  predicate p_A (x: int) (y1: int) (y2: int) (y3: int) =
+    (y2 <= y3) /\ (y3 <= x*x) /\ (y1 = y2*x) /\ (y1 <= x*x*x)
+    (** (y2 <= y3) /\ (y3 = x \/ y3 = x*x) /\ (y1 = y2*x) /\ (y1 <= x*x*x) *)
+
+  let function u (x: int) (y1: int) (y2: int) (y3: int) =
+    x*x*x - y1 + (y3 - y2)
+
+  predicate pR_ATA (x: int) (y1: int) (y2: int) (y3: int) =
+    y2 < y3 
+
+  predicate pR_AFTA (x: int) (y1: int) (y2: int) (y3: int) =
+    (y2 >= y3) /\ (y3 = x)
+
+
+  (** Verification *)
+
+  (** S-A *)
+  goal G1: forall x: int. (phi x) -> (p_A x x 1 x)
+
+  (** A-T-A *)
+  goal G2: forall x: int, y1: int, y2: int, y3: int.
+    (phi x) /\ (pR_ATA x y1 y2 y3) /\ (p_A x y1 y2 y3) ->
+      (p_A x (y1 + x) (y2 + 1) y3)
+
+  (** A-F-T-A *)
+  goal G3: forall x: int, y1: int, y2: int, y3: int.
+    (phi x) /\ (pR_AFTA x y1 y2 y3) /\ (p_A x y1 y2 y3) ->
+      (p_A x y1 y2 y1)
+
+
+  (** Mu correction *)
+  goal G4: forall x: int, y1: int, y2: int, y3: int.
+    (phi x) /\ (p_A x y1 y2 y3) -> (0 <= (u x y1 y2 y3))
+
+
+  (** Programm completion *)
+  (** A-T-A *)
+  goal G5: forall x: int, y1: int, y2: int, y3: int.
+    (phi x) /\ (p_A x y1 y2 y3) /\ (pR_ATA x y1 y2 y3) ->
+      ((u x y1 y2 y3) > (u x (y1 + x) (y2 + 1) y3))
+
+  (** A-T-A *)
+  goal G6: forall x: int, y1: int, y2: int, y3: int.
+    (phi x) /\ (p_A x y1 y2 y3) /\ (pR_AFTA x y1 y2 y3) ->
+      ((u x y1 y2 y3) > (u x (y1 + x) (y2 + 1) y3))
+end

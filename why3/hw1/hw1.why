@@ -1,0 +1,37 @@
+theory Prog
+  use int.Int
+  use int.Power
+  use int.IntInf
+
+  predicate in_bounds (x : int) =
+    (-0x8000_0000 <= x <= 0x7fff_ffff)
+
+  predicate phi_1 (x1 x2 x3 : int) =
+    (in_bounds(x1) /\ in_bounds(x2) /\ in_bounds(x3) /\ in_bounds(x1 - x3) /\ in_bounds(x1 + x2 - x3))
+
+  predicate phi_2 (x1 x2 x3 : int) =
+    (in_bounds(x1) /\ in_bounds(x2) /\ in_bounds(x3) /\ in_bounds(x1 + x2 - x3))
+
+  predicate psi (x1 x2 x3 z : int) =
+    (z = (x1 + x2 - x3))
+
+  predicate p11 (x1 x2 x3 : int) =
+    (in_bounds(x1 - x3) /\ in_bounds(x1 - x3 + x2))
+
+  predicate p21 (x1 x2 x3 : int) =
+    (p11 x1 x2 x3)
+
+  predicate p22 (x1 x2 x3 : int) =
+    ((not in_bounds(x1 - x3)) /\ in_bounds(x2 - x3) /\ in_bounds(x1 - x3 + x2))
+
+  predicate p23 (x1 x2 x3 : int) =
+    ((not in_bounds(x1 - x3)) /\ (not in_bounds(x2 - x3)) /\ in_bounds(x1 + x2) /\ in_bounds(x1 - x3 + x2))
+
+  goal G1: forall x1:int, x2: int, x3:int. (phi_1 x1 x2 x3) -> (p11 x1 x2 x3)
+  goal G2: forall x1:int, x2: int, x3:int. (phi_2 x1 x2 x3) -> (p11 x1 x2 x3)
+  goal G3: forall x1:int, x2: int, x3:int. (phi_1 x1 x2 x3) -> 
+    ((p21 x1 x2 x3) \/ (p22 x1 x2 x3) \/ (p23 x1 x2 x3))
+  goal G4: forall x1:int, x2: int, x3:int. (phi_2 x1 x2 x3) -> 
+    ((p21 x1 x2 x3) \/ (p22 x1 x2 x3) \/ (p23 x1 x2 x3))
+
+end
